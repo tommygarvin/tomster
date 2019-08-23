@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: tomster
+  namespace: tomster
+spec:
+  rules: 
+  - host: tomster.tommygarvin.com
+    http:
+      paths: 
+      - path: /
+        backend: 
+          serviceName: tomster
+          servicePort: 5000
+          

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomster
+  namespace: tomster
+  labels:
+    app: tomster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomster
+  template: 
+    metadata:
+      labels:
+        app: tomster
+    spec:
+      containers:
+      - name: tomster 
+        image: registry/tomster:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+          

@@ -1,0 +1,16 @@
+{
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "tomster.tommygarvin.com",
+        "Type": "A",
+        "AliasTarget": {
+          "HostedZoneId": "your.hosted.zone.id.goes.here",
+          "DNSName": "your.target.dns.name.goes.here",
+          "EvaluateTargetHealth": false
+        }
+      }
+    }
+  ]
+}

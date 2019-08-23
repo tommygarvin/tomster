@@ -1,0 +1,453 @@
+{
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "eb62fd1e-6252-4fc1-bd3e-df233fb68ef3": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 130,
+                    "y": 80
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "a5ab8936-dd28-42ec-9906-b77750111985": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 130,
+                    "y": 160
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "eb62fd1e-6252-4fc1-bd3e-df233fb68ef3"
+                ]
+            },
+            "bb7db4fc-b9a7-49c5-9301-b35b7882658a": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 130,
+                    "y": 320
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "eb62fd1e-6252-4fc1-bd3e-df233fb68ef3"
+                ]
+            },
+            "988aeef5-7ae8-435b-bc85-8b9d8cedf5b0": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 130,
+                    "y": 240
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "8185146c-f3c9-4847-93c6-41ee9cc9ac2d": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 250,
+                    "y": 200
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "9bdcfcc6-5ca2-4961-ac45-4c0ab5ff4587": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 30,
+                    "y": 200
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "eb62fd1e-6252-4fc1-bd3e-df233fb68ef3",
+                    "a5ab8936-dd28-42ec-9906-b77750111985",
+                    "988aeef5-7ae8-435b-bc85-8b9d8cedf5b0",
+                    "bb7db4fc-b9a7-49c5-9301-b35b7882658a"
+                ]
+            },
+            "22cd4283-c887-4ff4-8d3f-3898662f0735": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -70,
+                    "y": 160
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "e96b279e-e4eb-4ec1-ba77-73773fa8668d": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -70,
+                    "y": 240
+                },
+                "z": 0,
+                "embeds": []
+            }
+        }
+    },
+    "Resources": {
+        "source": {
+            "Type": "AWS::CodeCommit::Repository",
+            "Properties": {
+                "RepositoryDescription": "tomster",
+                "RepositoryName": "tomster",
+                "Tags": [
+                    {
+                        "Key": "project",
+                        "Value": "tomster"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "eb62fd1e-6252-4fc1-bd3e-df233fb68ef3"
+                }
+            }
+        },
+        "build": {
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+                "Artifacts": {
+                    "Type": "NO_ARTIFACTS"
+                },
+                "Description": "tomster",
+                "Environment": {
+                    "ComputeType": "BUILD_GENERAL1_SMALL",
+                    "Image": "aws/codebuild/standard:2.0",
+                    "ImagePullCredentialsType": "CODEBUILD",
+                    "PrivilegedMode": true,
+                    "Type": "LINUX_CONTAINER"
+                },
+                "Name": "tomster-build",
+                "ServiceRole": {
+                    "Fn::GetAtt": [
+                        "codebuild",
+                        "Arn"
+                    ]
+                },
+                "Source": {
+                    "BuildSpec": "./build/buildspec.yml",
+                    "GitCloneDepth": 1,
+                    "Location": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/tomster",
+                    "Type": "CODECOMMIT"
+                },
+                "Tags": [
+                    {
+                        "Key": "project",
+                        "Value": "tomster"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "a5ab8936-dd28-42ec-9906-b77750111985"
+                }
+            },
+            "DependsOn": [
+                "source"
+            ]
+        },
+        "deploy": {
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+                "Artifacts": {
+                    "Type": "NO_ARTIFACTS"
+                },
+                "Description": "tomster",
+                "Environment": {
+                    "ComputeType": "BUILD_GENERAL1_SMALL",
+                    "Image": "aws/codebuild/standard:1.0",
+                    "ImagePullCredentialsType": "CODEBUILD",
+                    "PrivilegedMode": true,
+                    "Type": "LINUX_CONTAINER"
+                },
+                "Name": "tomster-deploy",
+                "ServiceRole": {
+                    "Fn::GetAtt": [
+                        "codebuild",
+                        "Arn"
+                    ]
+                },
+                "Source": {
+                    "BuildSpec": "./deploy/buildspec.yml",
+                    "GitCloneDepth": 1,
+                    "Location": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/tomster",
+                    "Type": "CODECOMMIT"
+                },
+                "Tags": [
+                    {
+                        "Key": "project",
+                        "Value": "tomster"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "bb7db4fc-b9a7-49c5-9301-b35b7882658a"
+                }
+            },
+            "DependsOn": [
+                "source"
+            ]
+        },
+        "registry": {
+            "Type": "AWS::ECR::Repository",
+            "Properties": {
+                "RepositoryName": "tomster",
+                "Tags": [
+                    {
+                        "Key": "project",
+                        "Value": "tomster"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "988aeef5-7ae8-435b-bc85-8b9d8cedf5b0"
+                }
+            }
+        },
+        "codebuild": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "codebuild.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "codebuild-service",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "*",
+                                    "Resource": "*"
+                                }
+                            ],
+                            "Version": "2012-10-17"
+                        }
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "8185146c-f3c9-4847-93c6-41ee9cc9ac2d"
+                }
+            }
+        },
+        "pipeline": {
+            "Type": "AWS::CodePipeline::Pipeline",
+            "Properties": {
+                "Name": "tomster",
+                "ArtifactStore": {
+                    "Type": "S3",
+                    "Location": {
+                        "Ref": "artifacts"
+                    }
+                },
+                "RoleArn": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "arn:aws:iam::",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            ":role/",
+                            {
+                                "Ref": "codepipeline"
+                            }
+                        ]
+                    ]
+                },
+                "Stages": [
+                    {
+                        "Name": "source",
+                        "Actions": [
+                            {
+                                "Name": "source",
+                                "ActionTypeId": {
+                                    "Category": "Source",
+                                    "Owner": "AWS",
+                                    "Version": "1",
+                                    "Provider": "CodeCommit"
+                                },
+                                "Configuration": {
+                                    "PollForSourceChanges": false,
+                                    "BranchName": "master",
+                                    "RepositoryName": "tomster"
+                                },
+                                "RunOrder": 1,
+                                "InputArtifacts": [],
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "build",
+                        "Actions": [
+                            {
+                                "Name": "build",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Version": "1",
+                                    "Provider": "CodeBuild"
+                                },
+                                "Configuration": {
+                                    "ProjectName": "tomster-build"
+                                },
+                                "RunOrder": 1,
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "BuildArtifact"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "deploy",
+                        "Actions": [
+                            {
+                                "Name": "deploy",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Version": "1",
+                                    "Provider": "CodeBuild"
+                                },
+                                "Configuration": {
+                                    "ProjectName": "tomster-deploy"
+                                },
+                                "RunOrder": 1,
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "OutputArtifacts": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "9bdcfcc6-5ca2-4961-ac45-4c0ab5ff4587"
+                }
+            },
+            "DependsOn": [
+                "source",
+                "build",
+                "registry",
+                "deploy"
+            ]
+        },
+        "codepipeline": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "codepipeline.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "codepipeline-service",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "*",
+                                    "Resource": "*"
+                                }
+                            ],
+                            "Version": "2012-10-17"
+                        }
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "22cd4283-c887-4ff4-8d3f-3898662f0735"
+                }
+            }
+        },
+        "artifacts": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "project",
+                        "Value": "tomster"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "e96b279e-e4eb-4ec1-ba77-73773fa8668d"
+                }
+            }
+        }
+    }
+}

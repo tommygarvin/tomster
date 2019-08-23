@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - chmod +x ./deploy/kubectl.sh
+      - chmod +x ./deploy/nsdelete.sh
+      - ./deploy/kubectl.sh
+      - mkdir ~/.kube
+      - cp ./deploy/config ~/.kube/config
+      - kubectl get nodes
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+  build:
+    commands:
+      - echo Deploy started on `date`
+      - echo Cleaning up namespace...
+      - ./deploy/nsdelete.sh
+      - echo Creating namespace...
+      - kubectl apply -f ./deploy/k8s-ns.yml
+      - echo Creating service...
+      - kubectl apply -f ./deploy/k8s-svc.yml
+      - echo Creating deployment...
+      - kubectl apply -f ./deploy/k8s-deploy.yml
+      - echo Creating ingress...
+      - kubectl apply -f ./deploy/k8s-ing.yml
+  post_build:
+    commands:
+      - echo Deploy completed on `date`
+      
